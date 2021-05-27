@@ -9,6 +9,7 @@
   "author": "",
   "license": "MIT",
   "devDependencies": {
+    "aws-sdk": "^2.917.0",
     "serverless-plugin-existing-s3": "^2.4.0"
   }
 }
