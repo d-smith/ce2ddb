@@ -1,0 +1,29 @@
+service: cloudevents-to-ddb
+
+provider:
+  name: aws
+  stage: ${opt:stage, 'dev'}
+  runtime: nodejs12.x
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - "s3:PubObject"
+        - "s3:GetObject*"
+        - "s3:PutBucketNotification"
+      Resource:
+        Fn::Join:
+          - ""
+          - - "arn:aws:s3:::${env:FIREHOSE_BUCKET}/*"
+  
+functions:
+  scrape:
+    handler: handler.handleS3Event
+    events:
+      - existingS3:
+          bucket: ${env:FIREHOSE_BUCKET}
+          events: 
+            - s3:ObjectCreated:*
+
+plugins:
+- serverless-plugin-existing-s3
+
