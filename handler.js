@@ -2,10 +2,32 @@
 const readline = require('readline');
 const AWS = require('aws-sdk');
 const s3 = new AWS.S3();
+const ddb = new AWS.DynamoDB();
+
+const table_name = process.env.DYNAMODB_TABLE;
 
 let writeLine2DDB = async (line) => {
     let parsed = JSON.parse(line);
     console.log(`write record of type ${parsed.type} at timestamp ${parsed.time}`);
+
+    console.log(`write to table ${table_name}`);
+    let params = {
+        Item: {
+            "id": {
+                "S":parsed.id
+            },
+            "timestamp" : {
+                "S":parsed.time
+            },
+            "eventData": {
+                "S":line
+            }
+        },
+        TableName: table_name
+    }
+
+    let result = await ddb.putItem(params).promise();
+    console.log(result);
 }
 
 module.exports.handleS3Event = async (event, context) => {
