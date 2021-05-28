@@ -20,11 +20,13 @@ let writeLine2DDB = async (line) => {
                 "S":parsed.time
             },
             "eventData": {
-                "S":line
+                "M":AWS.DynamoDB.Converter.marshall(parsed)
             }
         },
         TableName: table_name
     }
+
+    
 
     let result = await ddb.putItem(params).promise();
     console.log(result);
