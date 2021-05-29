@@ -19,6 +19,9 @@ let writeLine2DDB = async (line) => {
             "timestamp" : {
                 "S":parsed.time
             },
+            "eventType": {
+                "S":parsed.type
+            },
             "eventData": {
                 "M":AWS.DynamoDB.Converter.marshall(parsed)
             }
