@@ -48,6 +48,12 @@ resources:
           -
             AttributeName: id
             AttributeType: S
+          - 
+            AttributeName: eventType
+            AttributeType: S
+          -
+            AttributeName: timestamp
+            AttributeType: S
         KeySchema:
           -
             AttributeName: id
@@ -55,6 +61,22 @@ resources:
         ProvisionedThroughput:
           ReadCapacityUnits: 1
           WriteCapacityUnits: 1
-        
+        GlobalSecondaryIndexes:
+          -
+            IndexName: "timestampIdx"
+            KeySchema:
+              -
+                AttributeName: eventType
+                KeyType: HASH
+              -
+                AttributeName: timestamp
+                KeyType: RANGE
+            Projection:
+              NonKeyAttributes:
+                - eventData
+              ProjectionType: INCLUDE
+            ProvisionedThroughput:
+              ReadCapacityUnits: 1
+              WriteCapacityUnits: 1
         
         TableName: ${self:provider.environment.DYNAMODB_TABLE}

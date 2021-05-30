@@ -26,7 +26,11 @@ let main = async() => {
 
     let response = await ddb.getItem(params).promise();
 
-    console.log(AWS.DynamoDB.Converter.unmarshall(response.Item.eventData.M));
+    if(response.Item) {
+        console.log(AWS.DynamoDB.Converter.unmarshall(response.Item.eventData.M));
+    } else {
+        console.log(`event ${options.id} not found`);
+    }
 };
 
 let doMain = async () => {
