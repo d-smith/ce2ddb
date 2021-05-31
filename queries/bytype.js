@@ -1,15 +1,7 @@
 const program = require('commander');
 const AWS = require('aws-sdk');
-const { DynamoDB } = require('aws-sdk');
-const { option } = require('commander');
 const ddb = new AWS.DynamoDB();
 
-/*
-command line:
-
-aws dynamodb query --table-name cloudevents-to-ddb-dev --index-name timestampIdx --key-condition-expression "eventType=:et" --expression-attribute-values '{":et":{"S":"com.example.someevent"}}'
-
-*/
 
 let main = async() => {
     program

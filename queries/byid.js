@@ -1,6 +1,5 @@
 const program = require('commander');
 const AWS = require('aws-sdk');
-const { DynamoDB } = require('aws-sdk');
 const ddb = new AWS.DynamoDB();
 
 let main = async() => {
