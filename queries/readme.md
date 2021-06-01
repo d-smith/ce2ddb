@@ -27,7 +27,7 @@ aws dynamodb query --table-name cloudevents-to-ddb-dev \
 --index-name timestampIdx \
 --key-condition-expression "eventType=:et and #ts between :start and :end" \
 --expression-attribute-names '{"#ts":"timestamp"}' \
---expression-attribute-values '{":et":{"S":"com.example.someevent"},":start":{"S":"2021-05-30-08:43"},":end":{"S":"2021-05-30-08:44"}}'
+--expression-attribute-values '{":et":{"S":"com.example.someevent"},":start":{"S":"2021-06-01-06:43"},":end":{"S":"2021-06-01-10:44"}}'
 
 ```
 

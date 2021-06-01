@@ -6,6 +6,7 @@ provider:
   runtime: nodejs12.x
   environment:
     DYNAMODB_TABLE: ${self:service}-${opt:stage, self:provider.stage}
+    TTL_SECONDS: 300
   iamRoleStatements:
     - Effect: Allow
       Action:
@@ -78,5 +79,7 @@ resources:
             ProvisionedThroughput:
               ReadCapacityUnits: 1
               WriteCapacityUnits: 1
-        
+        TimeToLiveSpecification:
+          Enabled: true
+          AttributeName: ttl_deadline
         TableName: ${self:provider.environment.DYNAMODB_TABLE}

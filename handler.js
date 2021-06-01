@@ -5,12 +5,13 @@ const s3 = new AWS.S3();
 const ddb = new AWS.DynamoDB();
 
 const table_name = process.env.DYNAMODB_TABLE;
+const ttl_seconds = parseInt(process.env.TTL_SECONDS);
 
 let writeLine2DDB = async (line) => {
     let parsed = JSON.parse(line);
     console.log(`write record of type ${parsed.type} at timestamp ${parsed.time}`);
 
-    console.log(`write to table ${table_name}`);
+    console.log(`write to table ${table_name} with TTL of ${ttl_seconds}`);
     let params = {
         Item: {
             "id": {
@@ -18,6 +19,9 @@ let writeLine2DDB = async (line) => {
             },
             "timestamp" : {
                 "S":parsed.time
+            },
+            "ttl_deadline" : {
+                "N": (Math.round(new Date().getTime()/1000) + ttl_seconds).toString()
             },
             "eventType": {
                 "S":parsed.type
@@ -29,7 +33,7 @@ let writeLine2DDB = async (line) => {
         TableName: table_name
     }
 
-    
+    console.log(params);
 
     let result = await ddb.putItem(params).promise();
     console.log(result);
