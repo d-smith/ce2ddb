@@ -6,7 +6,7 @@ provider:
   runtime: nodejs12.x
   environment:
     DYNAMODB_TABLE: ${self:service}-${opt:stage, self:provider.stage}
-    TTL_SECONDS: 300
+    TTL_SECONDS: 2592000 # One month 30 days * 24 hr/day * 60 min/hr * 60 s/min
   iamRoleStatements:
     - Effect: Allow
       Action:
