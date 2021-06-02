@@ -41,3 +41,28 @@ Everything for a given type
 ```
 aws dynamodb query --table-name cloudevents-to-ddb-dev --index-name timestampIdx --key-condition-expression "eventType=:et" --expression-attribute-values '{":et":{"S":"com.example.someevent"}}'
 ```
+
+## By range in small chunks
+
+First query, here assume we want to get chunks of 5 items.
+
+```
+aws dynamodb query --table-name cloudevents-to-ddb-dev \
+--max-items 5 \
+--index-name timestampIdx \
+--key-condition-expression "eventType=:et and #ts between :start and :end" \
+--expression-attribute-names '{"#ts":"timestamp"}' \
+--expression-attribute-values '{":et":{"S":"com.example.someevent"},":start":{"S":"2021-06-02-06:15"},":end":{"S":"2021-06-02-10:44"}}'
+```
+
+For subsequent queries extract the next token from the reults and use it as the value of --starting-token
+
+```
+aws dynamodb query --table-name cloudevents-to-ddb-dev \
+--max-items 5 \
+--starting-token eyJFeGNsdXNpdmVTdGFydEtleSI6IG51bGwsICJib3RvX3RydW5jYXRlX2Ftb3VudCI6IDV9 \
+--index-name timestampIdx \
+--key-condition-expression "eventType=:et and #ts between :start and :end" \
+--expression-attribute-names '{"#ts":"timestamp"}' \
+--expression-attribute-values '{":et":{"S":"com.example.someevent"},":start":{"S":"2021-06-02-06:15"},":end":{"S":"2021-06-02-10:44"}}'
+```
