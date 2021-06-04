@@ -5,27 +5,15 @@ provider:
   stage: ${opt:stage, 'dev'}
   runtime: nodejs12.x
   environment:
-    DYNAMODB_TABLE: ${self:service}-${opt:stage, self:provider.stage}
-    TTL_SECONDS: 2592000 # One month 30 days * 24 hr/day * 60 min/hr * 60 s/min
+    DYNAMODB_TABLE: cloudevents-to-ddb-${opt:stage, self:provider.stage}
   iamRoleStatements:
     - Effect: Allow
       Action:
         - dynamodb:Query
         - dynamodb:Scan
         - dynamodb:GetItem
-        - dynamodb:PutItem
-        - dynamodb:UpdateItem
-        - dynamodb:DeleteItem
       Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.DYNAMODB_TABLE}"
-    - Effect: Allow
-      Action:
-        - "s3:PubObject"
-        - "s3:GetObject*"
-        - "s3:PutBucketNotification"
-      Resource:
-        Fn::Join:
-          - ""
-          - - "arn:aws:s3:::${env:FIREHOSE_BUCKET}/*"
+
   
 functions:
   scrape:
