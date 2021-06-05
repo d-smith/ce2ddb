@@ -5,23 +5,25 @@ provider:
   stage: ${opt:stage, 'dev'}
   runtime: nodejs12.x
   apiKeys:
-    - p1-sequence-${opt:stage, self:provider.stage}
+    - query-process-${opt:stage, self:provider.stage}
   usagePlan:
     throttle:
       burstLimit: 10
       rateLimit: 5
+  environment:
+    DYNAMODB_TABLE: ${self:service}-${opt:stage, self:provider.stage}
 
 functions:
   step1:
-    handler: p1.step1
+    handler: query-process.step1
 
   step2:
-    handler: p1.step2
+    handler: query-process.step2
 
 stepFunctions:
   stateMachines:
     Process1:
-      name: p1-seq-${opt:stage}
+      name: query-process-${opt:stage}
       events:
         - http:
             path: create
@@ -40,7 +42,19 @@ stepFunctions:
             Type: Task
             TimeoutSeconds: 30
             Resource: "arn:aws:lambda:#{AWS::Region}:#{AWS::AccountId}:function:${self:service}-${opt:stage}-step2"
+            Next: doneTest
+          doneTest:
+            Type: Choice
+            Choices:
+              - Variable: '$.queryState'
+                StringEquals: 'running'
+                Next: step-2
+            Default: done
+          done:
+            Type: Pass
             End: true
+
+
 
 plugins:
   - serverless-step-functions
