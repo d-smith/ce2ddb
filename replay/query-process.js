@@ -1,7 +1,7 @@
 const AWS = require('aws-sdk');
 const ddb = new AWS.DynamoDB();
 
-let step1 = async (event) => {
+let startJob = async (event) => {
     console.log(event);
 
     if(event.type == undefined || event.startDate == undefined || event.endDate == undefined) {
@@ -11,7 +11,7 @@ let step1 = async (event) => {
     return event;
 }
 
-let step2 = async (event) => {
+let executeQuery = async (event) => {
     console.log(event)
 
     var params = {
@@ -59,6 +59,6 @@ let step2 = async (event) => {
 }
 
 module.exports = {
-    step1,
-    step2
+    startJob,
+    executeQuery
 };

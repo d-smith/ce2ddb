@@ -28,11 +28,11 @@ provider:
 
 
 functions:
-  step1:
-    handler: query-process.step1
+  startJob:
+    handler: query-process.startJob
 
-  step2:
-    handler: query-process.step2
+  executeQuery:
+    handler: query-process.executeQuery
 
 stepFunctions:
   stateMachines:
@@ -45,26 +45,26 @@ stepFunctions:
             private: true
       definition:
         Comment: "Two steps FTW!"
-        StartAt: step-1
+        StartAt: startJob
         States:
-          step-1:
+          startJob:
             Type: Task
             TimeoutSeconds: 30
-            Resource: "arn:aws:lambda:#{AWS::Region}:#{AWS::AccountId}:function:${self:service}-${opt:stage}-step1"
-            Next: step-2
-          step-2:
+            Resource: "arn:aws:lambda:#{AWS::Region}:#{AWS::AccountId}:function:${self:service}-${opt:stage}-startJob"
+            Next: queryAndReplay
+          queryAndReplay:
             Type: Task
             TimeoutSeconds: 30
-            Resource: "arn:aws:lambda:#{AWS::Region}:#{AWS::AccountId}:function:${self:service}-${opt:stage}-step2"
-            Next: doneTest
-          doneTest:
+            Resource: "arn:aws:lambda:#{AWS::Region}:#{AWS::AccountId}:function:${self:service}-${opt:stage}-executeQuery"
+            Next: isReplayJobComplete
+          isReplayJobComplete:
             Type: Choice
             Choices:
               - Variable: '$.queryState'
                 StringEquals: 'running'
-                Next: step-2
-            Default: done
-          done:
+                Next: queryAndReplay
+            Default: finishJob
+          finishJob:
             Type: Pass
             End: true
 
