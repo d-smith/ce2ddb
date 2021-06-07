@@ -1,3 +1,6 @@
+const AWS = require('aws-sdk');
+const ddb = new AWS.DynamoDB();
+
 let step1 = async (event) => {
     console.log(event);
 
@@ -10,12 +13,48 @@ let step1 = async (event) => {
 
 let step2 = async (event) => {
     console.log(event)
-    if(Math.random() < 0.5) {
-        console.log('query done');
+
+    var params = {
+        TableName: process.env.DYNAMODB_TABLE,
+        IndexName: process.env.DYNAMODB_IDX,
+        ExpressionAttributeValues: {
+            ":et": {
+                S: event.type
+            },
+            ":start" : {
+                S: event.startDate
+            },
+            ":end" : {
+                S: event.endDate
+            },
+        },
+        ExpressionAttributeNames: {
+            "#ts":"timestamp"
+        },
+        KeyConditionExpression: "eventType=:et and #ts between :start and :end",
+        Limit: process.env.MAX_ITEMS
+    };
+
+    let lastEvaluated = event.lastEvaluated;
+    if(lastEvaluated != undefined) {
+        params.ExclusiveStartKey = lastEvaluated;
+    }
+
+    console.log(params);
+
+    let response = await ddb.query(params).promise();
+
+    console.log(response);
+    lastEvaluated = response.LastEvaluatedKey;
+    if(lastEvaluated == undefined) {
+        console.log('query finished');
         event['queryState'] = 'done';
     } else {
-        console.log('query still running...')
+        event.lastEvaluated = lastEvaluated;
     }
+
+    
+    
     return event;
 }
 

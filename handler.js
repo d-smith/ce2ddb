@@ -35,8 +35,7 @@ let writeLine2DDB = async (line) => {
 
     console.log(params);
 
-    let result = await ddb.putItem(params).promise();
-    console.log(result);
+    return ddb.putItem(params).promise();
 }
 
 module.exports.handleS3Event = async (event, context) => {
@@ -61,11 +60,14 @@ module.exports.handleS3Event = async (event, context) => {
             terminal: false
           });
       
+          let ddbPromises = [];
           let myReadPromise = new Promise((resolve, reject) => {
       
-              rl.on('line', async (line) => {
+              rl.on('line',  (line) => {
                 console.log(`Line from file: ${line}`);
-                await writeLine2DDB(line);
+                let writePromise = writeLine2DDB(line);
+                console.log('push write promise');
+                ddbPromises.push(writePromise);
               });
               rl.on('error', () => {
                   console.log('error');
@@ -82,6 +84,14 @@ module.exports.handleS3Event = async (event, context) => {
           }
       
           console.log('done reading!');
+
+          console.log(ddbPromises);
+          try { await Promise.all(ddbPromises); }
+          catch(err) {
+            console.log('an error has occurred');
+          }
+
+          console.log('done writing');
 
 
     }

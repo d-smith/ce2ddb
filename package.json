@@ -9,7 +9,7 @@
   "author": "",
   "license": "MIT",
   "devDependencies": {
-    "aws-sdk": "^2.917.0",
+    "aws-sdk": "^2.922.0",
     "serverless-plugin-existing-s3": "^2.4.0",
     "serverless-pseudo-parameters": "^2.5.0",
     "serverless-step-functions": "^2.30.0"
