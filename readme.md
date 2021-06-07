@@ -1,6 +1,8 @@
 # ce to ddb
 
-Write the cloudevents contained in s3 objects to a ddb table
+Write the cloudevents contained in s3 objects to a ddb table.
+
+This project includes a serverless application that processes s3 objects containing cloud events as they are created in an s3 bucket, as well as a serverless project that illustrates how to query (and from the same lambda replay) a range of events using pagination inside a state machine. Some examples of how to query the dynamodb event storage table by event id and by event type and range is also provided.
 
 ## deploy
 
