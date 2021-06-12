@@ -1,0 +1,13 @@
+{
+    "computeEnvironmentName": "batch1",
+    "type":"MANAGED",
+    "state":"ENABLED",
+    "computeResources": {
+        "type":"FARGATE",
+        "maxvCpus": 4,
+        "subnets": ["subnet-0f8c52a44fcb6bb33","subnet-0f2abf1fdc72ebf0a","subnet-0f84c3d238f543e2f","subnet-029fa4efe5631162d","subnet-0746d4caf4d3a9c4a","subnet-049ac47def00fbd63"],
+        "securityGroupIds":["sg-02fb953e4f34b12d4"],
+        "instanceTypes":[]
+    },
+    "serviceRole": "arn:aws:iam::427848627088:role/aws-service-role/batch.amazonaws.com/AWSServiceRoleForBatch"
+}
