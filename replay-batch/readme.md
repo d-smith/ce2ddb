@@ -41,6 +41,8 @@ aws batch register-job-definition \
 --platform-capabilities "FARGATE" \
 --container-properties '{"image":"$ACCOUNT_NO.dkr.ecr.us-east-1.amazonaws.com/replay2queue:latest","environment":[{"name":"x","value":"xv"}], "resourceRequirements":[{"type":"VCPU","value":"0.25"},{"type":"MEMORY","value":"512"}], "networkConfiguration": {"assignPublicIp":"ENABLED"}, "executionRoleArn":"arn:aws:iam::$ACCOUNT_NO:role/queue-replay-batch-role"}'
 
+Note - add jobRoleArn too?
+
 Submit a job
 
 aws batch submit-job \
@@ -49,3 +51,15 @@ aws batch submit-job \
 --job-definition queue-replay-job \
 --container-overrides '{"environment":[{"name":"type","value":"com.example.someevent"},{"name":"startDate","value":"2021-06-02-06:15"},{"name":"endDate","value":"2021-06-02-10:15"},{"name":"queue","value":"xxx"}]}'
 
+## Replay
+
+create a queue
+
+aws sqs create-queue --queue-name replay
+
+## Learnings
+
+* vpc endpoints in private vpc
+* assign public ip address
+* execution and job role distinction
+* update cli version
