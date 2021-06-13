@@ -49,7 +49,7 @@ aws batch submit-job \
 --job-name j1 \
 --job-queue jobQueue1 \
 --job-definition queue-replay-job \
---container-overrides '{"environment":[{"name":"type","value":"com.example.someevent"},{"name":"startDate","value":"2021-06-02-06:15"},{"name":"endDate","value":"2021-06-02-10:15"},{"name":"queue","value":"xxx"}]}'
+--container-overrides '{"environment":[{"name":"type","value":"com.example.someevent"},{"name":"startDate","value":"2021-06-02-06:15"},{"name":"endDate","value":"2021-06-02-10:15"},{"name":"queue","value":"https://sqs.us-east-1.amazonaws.com/nnnn/replay"}]}'
 
 ## Replay
 
@@ -63,3 +63,8 @@ aws sqs create-queue --queue-name replay
 * assign public ip address
 * execution and job role distinction
 * update cli version
+
+## TODO/Next
+
+* Extract IAM permissions into cloudformation (execution and job roles)
+* Cloud formation to create batch setup

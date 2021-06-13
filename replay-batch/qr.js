@@ -1,5 +1,8 @@
 const AWS = require('aws-sdk');
 const ddb = new AWS.DynamoDB();
+const sqs = new AWS.SQS();
+
+const queueUrl = process.env.queue;
 
 
 let main = async() => {
@@ -15,9 +18,18 @@ let main = async() => {
             ExpressionAttributeValues: {
                 ":et": {
                     S: process.env.type
+                },
+                ":start" : {
+                    S: process.env.startDate
+                },
+                ":end" : {
+                    S: process.env.endDate
                 }
             },
-            KeyConditionExpression: "eventType=:et",
+            ExpressionAttributeNames: {
+                "#ts":"timestamp"
+            },
+            KeyConditionExpression: "eventType=:et and #ts between :start and :end",
             Limit: 5
         };
 
@@ -30,7 +42,26 @@ let main = async() => {
         let response = await ddb.query(params).promise();
 
         //console.log(AWS.DynamoDB.Converter.unmarshall(response.Item.eventData.M));
-        console.log(response);
+        //console.log(response);
+        let items = response.Items;
+        let entries = [];
+
+        items.forEach((item, idx)=> {
+            let unmarshalled = AWS.DynamoDB.Converter.unmarshall(item.eventData.M);
+            console.log(unmarshalled)
+            entries.push({
+                Id: `${idx}`,
+                MessageBody: JSON.stringify(unmarshalled)
+            })
+        });
+
+        let sqsParams = {
+            Entries: entries,
+            QueueUrl: queueUrl
+        };
+
+        let queueResponse = await sqs.sendMessageBatch(sqsParams).promise();
+        console.log(queueResponse);
 
         lastEvaluated = response.LastEvaluatedKey;
         if(lastEvaluated == undefined) {
